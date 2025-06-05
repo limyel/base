@@ -23,25 +23,27 @@ type Item interface {
 
 // Node B 树节点
 type Node struct {
-	items    []*Item // 节点的键
+	items    []Item  // 节点的键
 	children []*Node // 子节点
 	isLeaf   bool    // 是否为叶子节点
-	n        int     // 节点的键的数量
 }
 
 // BTree B 树
 type BTree struct {
 	root *Node // 根节点
-	t    int   // t，t = m/2（向上取整）
+	t    int   // t，t = m/2（向上取整）所以 m = 2t
+}
+
+func equal(a, b Item) bool {
+	return !a.Less(b) && !b.Less(a)
 }
 
 // createNode 创建一个节点
 func createNode(isLeaf bool) *Node {
 	return &Node{
-		items:    make([]*Item, 0),
+		items:    make([]Item, 0),
 		children: make([]*Node, 0),
 		isLeaf:   isLeaf,
-		n:        0,
 	}
 }
 
@@ -57,7 +59,7 @@ func initBTree(t int) *BTree {
 func (n *Node) search(item Item) int {
 	i := 0
 	// 找到第一个大于等于 item 的键的位置
-	for i < len(n.items) && (*n.items[i]).Less(item) {
+	for i < len(n.items) && (n.items[i]).Less(item) {
 		i++
 	}
 	return i
@@ -68,7 +70,7 @@ func (bt *BTree) search(n *Node, item Item) (*Node, int) {
 	i := n.search(item)
 
 	// 如果找到了，返回节点和索引
-	if i < n.n && *n.items[i] == item {
+	if i < len(n.items) && equal(item, n.items[i]) {
 		return n, i
 	}
 
@@ -81,10 +83,15 @@ func (bt *BTree) search(n *Node, item Item) (*Node, int) {
 	return bt.search(n.children[i], item)
 }
 
+// insert 在 B 树中插入 item
 func (bt *BTree) insert(item *Item) {
-	if bt.root.n == 2*bt.t-1 {
-		newRoot := createNode(false)
-		bt.root = newRoot
-		newRoot.children[0] = bt.root
-	}
+
+}
+
+func insertNonFull() {
+
+}
+
+func splitChild() {
+
 }
