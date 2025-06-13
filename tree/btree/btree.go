@@ -84,7 +84,20 @@ func (bt *BTree) search(n *Node, item Item) (*Node, int) {
 }
 
 // insert 在 B 树中插入 item
-func (bt *BTree) insert(item *Item) {
+func (bt *BTree) insert(item Item) {
+	if bt.root == nil {
+		bt.root = createNode(false)
+		bt.root.items = append(bt.root.items, item)
+	} else {
+		newRoot := createNode(false)
+		newRoot.children = append(newRoot.children, bt.root)
+
+		newRoot.splitChild()
+
+	}
+}
+
+func (n *Node) splitChild() {
 
 }
 
