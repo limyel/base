@@ -92,12 +92,24 @@ func (bt *BTree) insert(item Item) {
 		newRoot := createNode(false)
 		newRoot.children = append(newRoot.children, bt.root)
 
-		newRoot.splitChild()
-
 	}
 }
 
-func (n *Node) splitChild() {
+func (n *Node) splitChild(i int, t int) {
+	// 要分裂的子节点
+	node := n.children[i]
+
+	// todo ? 创建新节点
+	newNode := createNode(node.isLeaf)
+	newNode.items = node.items[t:]
+
+	// 如果不是叶子节点，移动子节点
+	if !node.isLeaf {
+		newNode.children = node.children[t:]
+	}
+
+	// 将中间的键移动到父节点
+	n.items = append(n.items, node.items[t-1])
 
 }
 
