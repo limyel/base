@@ -1,122 +1,93 @@
 package btree
 
-/*
- * 对于一棵 m（表示一个节点最多可以拥有多少个子节点） 阶 B 树来说：
- * * 每个节点最多包含 m-1 个键
- * * 除根节点外，每个节点至少包含 m/2-1（向上取整） 个键
- * * 根节点至少包含 1 个键（除非树为空）
- *
- * * 每个非叶子节点最多有 m 个子节点
- * * 除根节点外，每个非叶子节点至少有 m/2 个子节点
- * * 如果根节点不是叶子节点，则它至少有两个子节点
- *
- * * 节点内的键必须按升序排列
- * * 对于任意节点中的键 k，左子树中所有的键都小于 k，右子树中所有的键都大于 k，中间子树中所有的键必须在相邻两个键之间
- *
- * * 所有叶子节点必须在同一层（从根到任何子节点的路径长度都相同）
- */
-
-// Item B 树的键接口
+// Item B 树键的接口
 type Item interface {
-	Less(Item) bool
+	Less(item Item) bool
 }
 
-// Node B 树节点
+type items []Item
+
+type nodes []*Node
+
 type Node struct {
-	items    []Item  // 节点的键
-	children []*Node // 子节点
-	isLeaf   bool    // 是否为叶子节点
+	keys     items // 键
+	isLean   bool
+	children nodes // 子节点
 }
 
 // BTree B 树
+// 除了根节点之外：
+// 1、任意节点至少有 t-1 个键，最多有 2t-1 个键。这保证了节点空间既不会太浪费，也不会无限膨胀。
+// 2、任意节点只要不是叶子节点，如果它有 k 个键，那么它必须有 k+1 个子节点。
+// 3、节点内所有的键都是从小到大排序。
+// 4、所有叶子节点都必须在同一层。这保证查找任何数据经过的路径长度都是一样的。
 type BTree struct {
 	root *Node // 根节点
-	t    int   // t，t = m/2（向上取整）所以 m = 2t
+	t    int   // B 树的阶，t >= 2
 }
 
-func equal(a, b Item) bool {
-	return !a.Less(b) && !b.Less(a)
-}
-
-// createNode 创建一个节点
-func createNode(isLeaf bool) *Node {
+func newNode(isLeaf bool) *Node {
 	return &Node{
-		items:    make([]Item, 0),
-		children: make([]*Node, 0),
-		isLeaf:   isLeaf,
+		keys:     make(items, 0),
+		children: make(nodes, 0),
+		isLean:   isLeaf,
 	}
 }
 
-// initBTree 初始化 B 树
-func initBTree(t int) *BTree {
+func New(t int) *BTree {
 	return &BTree{
-		root: createNode(true),
+		root: newNode(true),
 		t:    t,
 	}
 }
 
-// search 在节点 n 中寻找 item
-func (n *Node) search(item Item) int {
-	i := 0
-	// 找到第一个大于等于 item 的键的位置
-	for i < len(n.items) && (n.items[i]).Less(item) {
-		i++
-	}
-	return i
+func equals(i1, i2 Item) bool {
+	return !i1.Less(i2) && !i2.Less(i1)
 }
 
-// search 在 B 树中寻找 item
-func (bt *BTree) search(n *Node, item Item) (*Node, int) {
-	i := n.search(item)
+func (bt *BTree) Search(item Item) (*Node, int) {
+	return bt.search(bt.root, item)
+}
 
-	// 如果找到了，返回节点和索引
-	if i < len(n.items) && equal(item, n.items[i]) {
-		return n, i
+func (bt *BTree) search(currentNode *Node, target Item) (*Node, int) {
+	i := 0
+	// 在当前节点中找到第一个不小于 target 的 key
+	for i < len(currentNode.keys) && currentNode.keys[i].Less(target) {
+		i += 1
 	}
 
-	// 如果没有找到，返回子节点和索引
-	if n.isLeaf {
+	// 检查 key 和 target 是否相等
+	if i < len(currentNode.keys) && equals(target, currentNode.keys[i]) {
+		return currentNode, i
+	}
+
+	// 如果没找到，且当前是叶子节点，则不存在
+	if currentNode.isLean {
 		return nil, -1
 	}
 
-	// 递归调用，
-	return bt.search(n.children[i], item)
+	// 如果不是叶子节点，则递归查询
+	return bt.search(currentNode.children[i], target)
 }
 
-// insert 在 B 树中插入 item
-func (bt *BTree) insert(item Item) {
-	if bt.root == nil {
-		bt.root = createNode(false)
-		bt.root.items = append(bt.root.items, item)
-	} else {
-		newRoot := createNode(false)
-		newRoot.children = append(newRoot.children, bt.root)
+// splitChild 节点分裂
+// n 要分裂的节点
+// childIdx
+func (bt *BTree) splitChild(n *Node, childIdx int) {
 
-	}
 }
 
-func (n *Node) splitChild(i int, t int) {
-	// 要分裂的子节点
-	node := n.children[i]
-
-	// todo ? 创建新节点
-	newNode := createNode(node.isLeaf)
-	newNode.items = node.items[t:]
-
-	// 如果不是叶子节点，移动子节点
-	if !node.isLeaf {
-		newNode.children = node.children[t:]
+// Insert 插入
+// B 树永远不会向一个满的节点插入新的键。向下遍历时如果遇到满的节点，就马上分裂它。
+func (bt *BTree) Insert(item Item) {
+	if len(bt.root.keys) == bt.t*2-1 {
+		newRoot := newNode(false)
+		newRoot.children = append(newRoot.children)
+		// 分裂旧的root
 	}
 
-	// 将中间的键移动到父节点
-	n.items = append(n.items, node.items[t-1])
-
 }
 
-func insertNonFull() {
-
-}
-
-func splitChild() {
+func (bt *BTree) insertNonfull(n *Node, item Item) {
 
 }
