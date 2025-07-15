@@ -17,6 +17,7 @@ func (bt *BinaryTree) PreOrder() []interface{} {
 	return doPreOrder(bt.Root, r)
 }
 
+// doPreOrder 先添加根节点的值，然后向左遍历，再向右遍历
 func doPreOrder(n *node, r []interface{}) []interface{} {
 	if n == nil {
 		return r
@@ -37,6 +38,7 @@ func (bt *BinaryTree) InOrder() []interface{} {
 	return doInOrder(bt.Root, r)
 }
 
+// doInOrder 向左遍历到底，
 func doInOrder(n *node, r []interface{}) []interface{} {
 	if n == nil {
 		return r
