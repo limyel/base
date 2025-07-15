@@ -2,17 +2,17 @@ package linkedlist
 
 import "fmt"
 
-type node struct {
+type Node struct {
 	value interface{}
-	next  *node
+	next  *Node
 }
 
 type LinkedList struct {
-	head *node
+	head *Node
 }
 
-func newNode(value interface{}) *node {
-	return &node{
+func newNode(value interface{}) *Node {
+	return &Node{
 		value: value,
 		next:  nil,
 	}
@@ -54,7 +54,7 @@ func (ll *LinkedList) Delete(value interface{}) error {
 	}
 
 	n := ll.head
-	var preNode *node
+	var preNode *Node
 	for n != nil {
 		if n.value == value {
 			break
