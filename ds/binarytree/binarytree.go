@@ -22,14 +22,14 @@ func (bt *BinaryTree) PreOrder() []interface{} {
 // 1、先访问当前节点（根）
 // 2、然后递归地对左子树进行一次完整的前序遍历
 // 3、最后递归地对右子树进行一次完整的前序遍历
-func doPreOrder(n *Node, r *[]interface{}) {
-	if n == nil {
+func doPreOrder(node *Node, r *[]interface{}) {
+	if node == nil {
 		return
 	}
 
-	*r = append(*r, n.value)
-	doPreOrder(n.left, r)
-	doPreOrder(n.right, r)
+	*r = append(*r, node.value)
+	doPreOrder(node.left, r)
+	doPreOrder(node.right, r)
 }
 
 // InOrder 中序遍历，左->根->右
@@ -42,14 +42,14 @@ func (bt *BinaryTree) InOrder() []interface{} {
 // doInOrder
 // 规则：
 // 1、
-func doInOrder(n *Node, r *[]interface{}) {
-	if n == nil {
+func doInOrder(node *Node, r *[]interface{}) {
+	if node == nil {
 		return
 	}
 
-	doInOrder(n.left, r)
-	*r = append(*r, n.value)
-	doInOrder(n.right, r)
+	doInOrder(node.left, r)
+	*r = append(*r, node.value)
+	doInOrder(node.right, r)
 
 	return
 }
@@ -61,12 +61,12 @@ func (bt *BinaryTree) PostOrder() []interface{} {
 	return r
 }
 
-func doPostOrder(n *Node, r *[]interface{}) {
-	if n == nil {
+func doPostOrder(node *Node, r *[]interface{}) {
+	if node == nil {
 		return
 	}
 
-	doPostOrder(n.left, r)
-	doPostOrder(n.right, r)
-	*r = append(*r, n.value)
+	doPostOrder(node.left, r)
+	doPostOrder(node.right, r)
+	*r = append(*r, node.value)
 }
