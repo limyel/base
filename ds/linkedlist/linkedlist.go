@@ -53,29 +53,22 @@ func (ll *LinkedList) Delete(value interface{}) error {
 		return fmt.Errorf("linkedlist is empty")
 	}
 
-	n := ll.head
-	var preNode *Node
-	for n != nil {
-		if n.value == value {
-			break
-		}
-
-		preNode = n
-		n = n.next
-	}
-
-	if n == nil {
-		return fmt.Errorf("value %v not exists", value)
-	}
-
-	// 要移除的是头节点
-	if preNode == nil {
-		ll.head = n.next
+	if ll.head.value == value {
+		ll.head = ll.head.next
 		return nil
 	}
 
-	preNode.next = n.next
-	return nil
+	current := ll.head
+	for current.next != nil && current.next.value != value {
+		current = current.next
+	}
+
+	if current.next != nil {
+		current.next = current.next.next
+		return nil
+	} else {
+		return fmt.Errorf("value %v not exists", value)
+	}
 }
 
 func (ll *LinkedList) Print() {

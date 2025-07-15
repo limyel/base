@@ -13,12 +13,12 @@ import (
 //	 /   / \
 //	D   E   F
 func newTestTree() *BinaryTree {
-	nodeA := &node{value: "A"}
-	nodeB := &node{value: "B"}
-	nodeC := &node{value: "C"}
-	nodeD := &node{value: "D"}
-	nodeE := &node{value: "E"}
-	nodeF := &node{value: "F"}
+	nodeA := &Node{value: "A"}
+	nodeB := &Node{value: "B"}
+	nodeC := &Node{value: "C"}
+	nodeD := &Node{value: "D"}
+	nodeE := &Node{value: "E"}
+	nodeF := &Node{value: "F"}
 
 	nodeA.left = nodeB
 	nodeA.right = nodeC
